@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>APA 7 Table Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Set the base font for the entire page to Calibri */
+        body {
+            font-family: 'Calibri', 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+            background-color: #ffffff;
+            color: #000000;
+        }
+
+        /* Custom styles for APA table formatting */
+        .apa-table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 20px 0;
+            font-size: 1em;
+            text-align: left;
+        }
+
+        .apa-table caption {
+            font-weight: bold;
+            caption-side: top;
+            text-align: left;
+            padding-bottom: 8px;
+        }
+        
+        .apa-table .table-title {
+            font-style: italic;
+            margin-bottom: 10px;
+        }
+
+        .apa-table th,
+        .apa-table td {
+            padding: 10px 15px;
+            border: none; /* No vertical borders in APA */
+        }
+        
+        .apa-table thead tr {
+             border-top: 2px solid #000;
+             border-bottom: 2px solid #000;
+        }
+
+        .apa-table tbody tr:last-child {
+            border-bottom: 2px solid #000;
+        }
+        
+        .apa-table tfoot td {
+            font-size: 0.9em;
+            padding-top: 10px;
+        }
+
+        /* Style overrides for black and white theme */
+        .btn-primary {
+            background-color: #000;
+            color: #fff;
+            border: 2px solid #000;
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .btn-primary:hover {
+            background-color: #fff;
+            color: #000;
+        }
+        .btn-secondary {
+            background-color: #fff;
+            color: #000;
+            border: 2px solid #000;
+             transition: background-color 0.2s, color 0.2s;
+        }
+        .btn-secondary:hover {
+            background-color: #000;
+            color: #fff;
+        }
+        
+        input[type="text"], textarea {
+            border: 2px solid #000;
+            border-radius: 0; /* Sharp corners for minimalist design */
+        }
+        input[type="text"]:focus, textarea:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px #000;
+        }
+
+    </style>
+</head>
+<body class="bg-white">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-4xl">
+
+        <!-- Header -->
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-bold">APA 7 Style Table Generator</h1>
+            <p class="text-lg mt-2">Create and format APA 7th Edition tables effortlessly.</p>
+        </header>
+
+        <!-- Input Section -->
+        <main class="space-y-6">
+            <!-- Table Metadata -->
+            <div>
+                <h2 class="text-2xl font-bold border-b-2 border-black pb-2 mb-4">Table Information</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="tableNumber" class="block font-bold mb-1">Table Number</label>
+                        <input type="text" id="tableNumber" class="w-full p-2" placeholder="e.g., 1">
+                    </div>
+                    <div>
+                        <label for="tableTitle" class="block font-bold mb-1">Table Title</label>
+                        <input type="text" id="tableTitle" class="w-full p-2" placeholder="e.g., Descriptive Statistics of Study Variables">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Columns Section -->
+            <div>
+                <div class="flex justify-between items-center border-b-2 border-black pb-2 mb-4">
+                    <h2 class="text-2xl font-bold">Columns</h2>
+                    <div class="space-x-2">
+                        <button onclick="addColumn()" class="btn-secondary py-1 px-3 text-sm font-bold">+</button>
+                        <button onclick="removeColumn()" class="btn-secondary py-1 px-3 text-sm font-bold">-</button>
+                    </div>
+                </div>
+                <div id="columns-container" class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <!-- Column inputs will be added here by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Rows Section -->
+            <div>
+                 <div class="flex justify-between items-center border-b-2 border-black pb-2 mb-4">
+                    <h2 class="text-2xl font-bold">Rows</h2>
+                    <div class="space-x-2">
+                        <button onclick="addRow()" class="btn-secondary py-1 px-3 text-sm font-bold">+</button>
+                        <button onclick="removeRow()" class="btn-secondary py-1 px-3 text-sm font-bold">-</button>
+                    </div>
+                </div>
+                <div id="rows-container" class="space-y-4">
+                    <!-- Row inputs will be added here by JavaScript -->
+                </div>
+            </div>
+
+             <!-- Table Note -->
+            <div>
+                <h2 class="text-2xl font-bold border-b-2 border-black pb-2 mb-4">Table Note</h2>
+                <textarea id="tableNote" class="w-full p-2 h-24" placeholder="e.g., N = 150. This note appears at the bottom of the table."></textarea>
+            </div>
+            
+            <!-- Generate Button -->
+            <div class="text-center pt-4">
+                <button onclick="generateTable()" class="btn-primary font-bold py-3 px-12 text-lg">Generate Table</button>
+            </div>
+
+        </main>
+
+        <!-- Output Section -->
+        <section id="output-section" class="mt-12 hidden">
+            <div class="flex justify-between items-center border-b-2 border-black pb-2 mb-4">
+                <h2 class="text-3xl font-bold">Your APA Table</h2>
+                 <button id="copy-button" onclick="copyTable()" class="btn-primary font-bold py-2 px-6">Copy Table</button>
+            </div>
+            <div id="table-output-container" class="bg-white p-4 border-2 border-dashed border-black">
+                <!-- Generated table will be displayed here -->
+            </div>
+             <p id="copy-success-msg" class="text-center mt-2 font-bold" style="display: none;">Copied to clipboard!</p>
+        </section>
+
+    </div>
+
+    <script>
+        // --- INITIAL STATE ---
+        // Initialize with a few columns and one row for a better user experience.
+        document.addEventListener('DOMContentLoaded', () => {
+            addColumn();
+            addColumn();
+            addColumn();
+            addRow();
+        });
+
+        // --- DYNAMIC INPUT MANAGEMENT ---
+        
+        /**
+         * Adds a new input field for a column header.
+         */
+        function addColumn() {
+            const columnsContainer = document.getElementById('columns-container');
+            const newIndex = columnsContainer.children.length;
+            const columnInput = document.createElement('div');
+            columnInput.innerHTML = `<input type="text" class="w-full p-2 column-header" placeholder="Column ${newIndex + 1}">`;
+            columnsContainer.appendChild(columnInput);
+
+            // Also add a corresponding cell to each existing row
+            const rows = document.querySelectorAll('.data-row');
+            rows.forEach(row => {
+                const cell = document.createElement('div');
+                cell.innerHTML = `<input type="text" class="w-full p-2 row-cell" placeholder="Data">`;
+                row.appendChild(cell);
+            });
+            updateRowLayout();
+        }
+
+        /**
+         * Removes the last column header input and the corresponding cells from all rows.
+         */
+        function removeColumn() {
+            const columnsContainer = document.getElementById('columns-container');
+            if (columnsContainer.children.length > 1) { // Keep at least one column
+                columnsContainer.removeChild(columnsContainer.lastChild);
+                const rows = document.querySelectorAll('.data-row');
+                rows.forEach(row => {
+                    row.removeChild(row.lastChild);
+                });
+                updateRowLayout();
+            }
+        }
+
+        /**
+         * Adds a new row of input fields for data entry.
+         */
+        function addRow() {
+            const rowsContainer = document.getElementById('rows-container');
+            const columnCount = document.getElementById('columns-container').children.length;
+            const newRow = document.createElement('div');
+            newRow.className = 'data-row grid gap-4';
+            
+            for (let i = 0; i < columnCount; i++) {
+                const cell = document.createElement('div');
+                cell.innerHTML = `<input type="text" class="w-full p-2 row-cell" placeholder="Data">`;
+                newRow.appendChild(cell);
+            }
+            rowsContainer.appendChild(newRow);
+            updateRowLayout();
+        }
+        
+        /**
+         * Removes the last data row.
+         */
+        function removeRow() {
+            const rowsContainer = document.getElementById('rows-container');
+            if (rowsContainer.children.length > 1) { // Keep at least one row
+                rowsContainer.removeChild(rowsContainer.lastChild);
+            }
+        }
+        
+        /**
+         * Updates the grid layout for rows to match the number of columns.
+         */
+        function updateRowLayout() {
+            const columnCount = document.getElementById('columns-container').children.length;
+            const rows = document.querySelectorAll('.data-row');
+            const gridTemplateColumns = `repeat(${columnCount}, minmax(0, 1fr))`;
+            rows.forEach(row => {
+                row.style.gridTemplateColumns = gridTemplateColumns;
+            });
+        }
+
+
+        // --- CORE FUNCTIONALITY ---
+
+        /**
+         * Gathers all data from inputs and generates the HTML for the APA table.
+         */
+        function generateTable() {
+            const tableNumber = document.getElementById('tableNumber').value.trim();
+            const tableTitle = document.getElementById('tableTitle').value.trim();
+            const tableNote = document.getElementById('tableNote').value.trim();
+
+            const columnHeaders = Array.from(document.querySelectorAll('.column-header')).map(input => input.value);
+            const rowsData = Array.from(document.querySelectorAll('.data-row')).map(row => 
+                Array.from(row.querySelectorAll('.row-cell')).map(cell => cell.value)
+            );
+            
+            // Start building the table HTML
+            let tableHTML = `<figure>`;
+            
+            // Add caption (Table Number and Title)
+            tableHTML += `<figcaption class="text-left mb-2">`;
+            if (tableNumber) tableHTML += `<p class="font-bold">Table ${tableNumber}</p>`;
+            if (tableTitle) tableHTML += `<p class="italic">${tableTitle}</p>`;
+            tableHTML += `</figcaption>`;
+            
+            tableHTML += `<table class="apa-table w-full text-left">`;
+
+            // Table Head
+            tableHTML += `<thead><tr>`;
+            columnHeaders.forEach(header => {
+                tableHTML += `<th scope="col" class="font-bold p-2">${header}</th>`;
+            });
+            tableHTML += `</tr></thead>`;
+            
+            // Table Body
+            tableHTML += `<tbody>`;
+            rowsData.forEach(rowData => {
+                tableHTML += `<tr>`;
+                rowData.forEach(cellData => {
+                    tableHTML += `<td class="p-2">${cellData}</td>`;
+                });
+                tableHTML += `</tr>`;
+            });
+            tableHTML += `</tbody>`;
+
+            // Table Foot (for the note)
+            if (tableNote) {
+                tableHTML += `<tfoot><tr><td colspan="${columnHeaders.length}" class="p-2 text-sm"><em>Note.</em> ${tableNote}</td></tr></tfoot>`;
+            }
+            
+            tableHTML += `</table></figure>`;
+
+            // Display the generated table
+            const outputContainer = document.getElementById('table-output-container');
+            outputContainer.innerHTML = tableHTML;
+            document.getElementById('output-section').classList.remove('hidden');
+        }
+
+        /**
+         * Copies the generated table HTML to the clipboard.
+         */
+        function copyTable() {
+            const tableContainer = document.getElementById('table-output-container');
+            if (!tableContainer.innerHTML) return;
+            
+            // The range-based method is best for copying formatted HTML
+            const range = document.createRange();
+            range.selectNode(tableContainer);
+            window.getSelection().removeAllRanges(); // Clear previous selections
+            window.getSelection().addRange(range); // To select text
+            
+            try {
+                document.execCommand('copy');
+                // Show success message
+                const successMsg = document.getElementById('copy-success-msg');
+                successMsg.style.display = 'block';
+                setTimeout(() => {
+                    successMsg.style.display = 'none';
+                }, 2000);
+            } catch (err) {
+                console.error('Failed to copy table: ', err);
+                alert('Could not copy the table. Please try selecting it manually.');
+            }
+            
+            window.getSelection().removeAllRanges(); // Deselect
+        }
+
+    </script>
+</body>
+</html>
